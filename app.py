@@ -4,15 +4,16 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
+app = FastAPI()
+
+# ✅ Add CORS after app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 👈 or restrict to ["https://gd.games"]
+    allow_origins=["*"],  # 👈 or ["https://gd.games"] if you want to restrict
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-app = FastAPI()
 
 client = OpenAI(
     base_url="https://router.huggingface.co/v1",
@@ -30,4 +31,7 @@ def ask(message: Message):
             {"role": "user", "content": message.content}
         ],
     )
-    return {"reply": completion.choices[0].message}
+
+    # ✅ Extract only the text (string)
+    reply = completion.choices[0].message["content"]
+    return {"reply": reply}
