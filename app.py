@@ -9,7 +9,7 @@ app = FastAPI()
 # ✅ Enable CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Or ["https://gd.games"] for security
+    allow_origins=["*"],  # Or ["https://gd.games"] to restrict
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -18,17 +18,18 @@ app.add_middleware(
 # ✅ Configure Mistral client
 client = OpenAI(
     base_url="https://api.mistral.ai/v1",
-    api_key=os.environ.get("MISTRAL_API_KEY"),  # Get your free API key from Mistral
+    api_key=os.environ.get("MISTRAL_API_KEY"),
 )
 
+# ✅ GDevelop can now send both content and model
 class Message(BaseModel):
     content: str
-    model: str = "mistral-tiny"  # default if none provided
+    model: str = "mistral-tiny"  # default if not provided
 
 @app.post("/ask")
 def ask(message: Message):
     completion = client.chat.completions.create(
-        model=message.model,  # use chosen model
+        model=message.model,  # Use whatever model is passed
         messages=[{"role": "user", "content": message.content}],
     )
     return {"reply": completion.choices[0].message}
