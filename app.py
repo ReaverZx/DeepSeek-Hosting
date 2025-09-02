@@ -23,11 +23,12 @@ client = OpenAI(
 
 class Message(BaseModel):
     content: str
+    model: str = "mistral-tiny"  # default if none provided
 
 @app.post("/ask")
 def ask(message: Message):
     completion = client.chat.completions.create(
-        model="mistral-tiny",  # free tier model
+        model=message.model,  # use chosen model
         messages=[{"role": "user", "content": message.content}],
     )
     return {"reply": completion.choices[0].message}
