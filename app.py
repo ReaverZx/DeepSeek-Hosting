@@ -16,8 +16,8 @@ app.add_middleware(
 )
 
 client = OpenAI(
-    base_url="https://router.huggingface.co/v1",
-    api_key=os.environ.get("HF_TOKEN"),
+    base_url="https://glama.ai/api/gateway/openai/v1",
+    api_key=os.environ.get("GLAMA_API_KEY"),
 )
 
 class Message(BaseModel):
