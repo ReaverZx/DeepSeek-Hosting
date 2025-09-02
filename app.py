@@ -6,18 +6,19 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-# ✅ Enable CORS for all origins (or restrict to gd.games)
+# ✅ Enable CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Or ["https://gd.games"] to be more secure
+    allow_origins=["*"],  # Or ["https://gd.games"] for security
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# ✅ Configure Mistral client
 client = OpenAI(
-    base_url="https://glama.ai/api/gateway/openai/v1",
-    api_key=os.environ.get("GLAMA_API_KEY"),
+    base_url="https://api.mistral.ai/v1",
+    api_key=os.environ.get("MISTRAL_API_KEY"),  # Get your free API key from Mistral
 )
 
 class Message(BaseModel):
@@ -26,8 +27,7 @@ class Message(BaseModel):
 @app.post("/ask")
 def ask(message: Message):
     completion = client.chat.completions.create(
-        model="deepseek-ai/DeepSeek-V3:together",
+        model="mistral-tiny",  # free tier model
         messages=[{"role": "user", "content": message.content}],
     )
-    # ✅ Return full object (works in preview and now CORS allows web fetch)
     return {"reply": completion.choices[0].message}
